@@ -1,0 +1,21 @@
+global:
+  config_version: 2
+input:
+  type: file
+  path: /path/to/nginx/access.log # Update this path
+  readall: true
+grok:
+  patterns_dir: /etc/grok-exporter/patterns
+  additional_patterns:
+    - 'NGINX_LOG %{IP:client_ip} - - \[%{HTTPDATE:timestamp}\]'
+metrics:
+  - type: counter
+    name: http_requests_total
+    help: Total number of HTTP requests
+    match: "%{NGINX_LOG}"
+    labels:
+      client_ip: "{{.client_ip}}"
+      timestamp: "{{.timestamp}}"
+server:
+  host: 0.0.0.0
+  port: 9114 # or any port you prefer

@@ -85,3 +85,25 @@ jobs:
             sudo docker stop my-nginx-exporter || true
             sudo docker rm my-nginx-exporter || true
             sudo docker run -d --name my-nginx-exporter --network=my-network --network-alias=my-nginx -p 127.0.0.1:9113:9113 my-nginx-exporter
+
+  deploy_grok_exporter:
+    runs-on: ubuntu-latest
+    needs: clone
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: SSH and deploy Grok Exporter on Hetzner
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HETZNER_IP }}
+          username: ${{ secrets.HETZNER_USERNAME }}
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          port: ${{ secrets.HETZNER_PORT }}
+          script: |
+            cd logging/grok-exporter
+            sudo docker build -t my-grok-exporter .
+            sudo docker stop my-grok-exporter || true
+            sudo docker rm my-grok-exporter || true
+            sudo docker run -d --name my-grok-exporter -p 127.0.0.1:9144:9144 my-grok-exporter
+            sudo docker network connect my-network my-grok-exporter || true
