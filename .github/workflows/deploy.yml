@@ -18,6 +18,7 @@ jobs:
           host: ${{ secrets.HETZNER_IP }}
           username: ${{ secrets.HETZNER_USERNAME }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
+          port: ${{ secrets.HETZNER_PORT }}
           script: |
             git clone git@github.com:smadixd/logging.git
             cd logging/grafana
@@ -39,6 +40,7 @@ jobs:
           host: ${{ secrets.HETZNER_IP }}
           username: ${{ secrets.HETZNER_USERNAME }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
+          port: ${{ secrets.HETZNER_PORT }}
           script: |
             git clone git@github.com:smadixd/logging.git
             cd logging/prometheus
