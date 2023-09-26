@@ -25,7 +25,7 @@ jobs:
             sudo docker build -t my-grafana .
             sudo docker stop my-grafana || true
             sudo docker rm my-grafana || true
-            sudo docker run -d --name my-grafana -p 127.0.0.1:8080:8080 my-grafana
+            sudo docker run -d --name my-grafana -p 127.0.0.1:8080:8080 -v grafana_data:/var/lib/grafana my-grafana
             sudo docker network connect my-network my-grafana || true
 
   deploy_prometheus:
@@ -47,5 +47,5 @@ jobs:
             sudo docker build -t my-prometheus .
             sudo docker stop my-prometheus || true
             sudo docker rm my-prometheus || true
-            sudo docker run -d --name my-prometheus -p 127.0.0.1:9090:9090 my-prometheus
+            sudo docker run -d --name my-prometheus -p 9090:9090 -v prometheus_data:/prometheus my-prometheus
             sudo docker network connect my-network my-prometheus || true
