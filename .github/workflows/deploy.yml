@@ -84,5 +84,5 @@ jobs:
             sudo docker build -t my-nginx-exporter .
             sudo docker stop my-nginx-exporter || true
             sudo docker rm my-nginx-exporter || true
-            sudo docker run -d --name my-nginx-exporter -p 9113:9113 my-nginx-exporter
+            sudo docker run -d --name my-nginx-exporter -p 127.0.0.1:9113:9113 my-nginx-exporter
             sudo docker network connect my-network my-nginx-exporter || true
