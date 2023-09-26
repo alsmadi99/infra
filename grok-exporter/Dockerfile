@@ -18,6 +18,9 @@ FROM ubuntu:latest
 # Copy the grok_exporter binary from the builder image
 COPY --from=builder /go/bin/grok_exporter /usr/local/bin/grok_exporter
 
+# Copy the libonig shared library from the builder image
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libonig.so.5 /usr/lib/x86_64-linux-gnu/libonig.so.5
+
 # Copy your config file (assuming it's in the same directory as the Dockerfile)
 COPY ./config.yml /etc/grok_exporter/config.yml
 
