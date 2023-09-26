@@ -26,3 +26,4 @@ jobs:
             sudo docker stop my-grafana || true
             sudo docker rm my-grafana || true
             sudo docker run -d --name my-grafana -p 8080:8080 my-grafana
+            sudo docker network connect my-network my-grafana || true

@@ -26,3 +26,4 @@ jobs:
             sudo docker stop my-prometheus || true
             sudo docker rm my-prometheus || true
             sudo docker run -d --name my-prometheus -p 9090:9090 my-prometheus
+            sudo docker network connect my-network my-prometheus || true
