@@ -1,6 +1,25 @@
-# Use an existing Grok Exporter image
-FROM fstab/grok-exporter
+# Use a base image with Go and gcc installed
+FROM golang:1.16 as builder
 
-# Copy your grok patterns and config file
-COPY grok-patterns /etc/grok-exporter/patterns
-COPY config.yml /etc/grok-exporter/config.yml
+# Install Oniguruma library
+RUN apt-get update && apt-get install -y libonig-dev
+
+# Clone the grok_exporter repository
+RUN git clone https://github.com/fstab/grok_exporter.git /go/src/grok_exporter
+
+# Build grok_exporter
+WORKDIR /go/src/grok_exporter
+RUN git submodule update --init --recursive
+RUN go install .
+
+# Create the final image
+FROM ubuntu:latest
+
+# Copy the grok_exporter binary from the builder image
+COPY --from=builder /go/bin/grok_exporter /usr/local/bin/grok_exporter
+
+# Copy your config file (assuming it's in the same directory as the Dockerfile)
+COPY ./config.yml /etc/grok_exporter/config.yml
+
+# Run grok_exporter
+CMD ["/usr/local/bin/grok_exporter", "-config", "/etc/grok_exporter/config.yml"]
