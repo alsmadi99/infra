@@ -4,13 +4,9 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "logging/grafana/**"
-      - "logging/prometheus/**"
 
 jobs:
   deploy_grafana:
-    if: contains(github.event.head_commit.message, 'grafana')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -32,7 +28,6 @@ jobs:
             sudo docker network connect my-network my-grafana || true
 
   deploy_prometheus:
-    if: contains(github.event.head_commit.message, 'prometheus')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
