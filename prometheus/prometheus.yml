@@ -16,7 +16,6 @@ scrape_configs:
       module: [http_2xx_4xx_5xx]
     static_configs:
       - targets:
-          - http://portfolio-container:5000
           - https://mohammadalsmadi.com
     relabel_configs:
       - source_labels: [__address__]
@@ -26,6 +25,6 @@ scrape_configs:
       - target_label: __address__
         replacement: my-blackbox-exporter:9115
 
-  - job_name: "fluentd"
-    static_configs:
-      - targets: ["my-fluentd:24224"]
+  # - job_name: "fluentd"
+  #   static_configs:
+  #     - targets: ["my-fluentd:24224"]

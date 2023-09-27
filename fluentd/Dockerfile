@@ -1,13 +1,7 @@
 FROM fluent/fluentd:edge-debian
 
-# Switch to root user to install packages
-USER smadi
-
 # Install Fluentd Prometheus plugin
 RUN gem install fluent-plugin-prometheus --no-document
-
-# Switch back to the original user
-USER fluent
 
 # Set environment variable for Fluentd config
 ENV FLUENTD_CONF=fluentd.conf
