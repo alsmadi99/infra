@@ -5,4 +5,4 @@ FROM prom/blackbox-exporter:latest
 COPY blackbox.yml /etc/blackbox_exporter/config.yml
 
 # Expose the port
-EXPOSE 9114
+EXPOSE 9115

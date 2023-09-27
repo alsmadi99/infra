@@ -104,4 +104,4 @@ jobs:
             sudo docker build -t my-blackbox-exporter .
             sudo docker stop my-blackbox-exporter || true
             sudo docker rm my-blackbox-exporter || true
-            sudo docker run -d --name my-blackbox-exporter --network my-network -p 127.0.0.1:9114:9114 my-blackbox-exporter
+            sudo docker run -d --name my-blackbox-exporter --network my-network -p 127.0.0.1:9115:9115 my-blackbox-exporter
