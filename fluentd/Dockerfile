@@ -1,17 +1,16 @@
-# Use Fluentd's latest image
-FROM fluent/fluentd:v1.16-1
+FROM fluent/fluentd:edge-debian
 
 # Set environment variable for Fluentd config
 ENV FLUENTD_CONF=fluentd.conf
 
-# Install Prometheus plugin
-RUN fluent-gem install fluent-plugin-prometheus --no-document
+# Install Fluentd Prometheus plugin
+RUN ["gem", "install", "fluent-plugin-prometheus", "--no-document"]
 
-# Copy your Fluentd configuration file into the container
+# Copy Fluentd configuration file
 COPY fluentd.conf /fluentd/etc/fluentd.conf
 
-# Expose the Fluentd port
-EXPOSE 24224
+# Expose Fluentd and Prometheus ports
+EXPOSE 24224 24231
 
 # Run Fluentd command by default
 CMD ["fluentd", "-c", "/fluentd/etc/$FLUENTD_CONF", "-p", "/fluentd/plugins"]
