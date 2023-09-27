@@ -1,15 +1,17 @@
-FROM fluent/fluentd:v1.16-1
+# Use Fluentd's latest image
+FROM fluent/fluentd:latest
 
-USER root
+# Set environment variable for Fluentd config
+ENV FLUENTD_CONF=fluentd.conf
 
-RUN apk add --no-cache --update --virtual .build-deps \
-        sudo build-base ruby-dev \
- && sudo gem install fluent-plugin-elasticsearch \
- && sudo gem sources --clear-all \
- && apk del .build-deps \
- && rm -rf /tmp/* /var/tmp/* /usr/lib/ruby/gems/*/cache/*.gem
+# Install Prometheus plugin
+RUN ["gem", "install", "fluent-plugin-prometheus", "--no-document"]
 
-COPY fluent.conf /fluentd/etc/
-COPY entrypoint.sh /bin/
+# Copy your Fluentd configuration file into the container
+COPY fluentd.conf /fluentd/etc/fluentd.conf
 
-USER fluent
+# Expose the Fluentd port
+EXPOSE 24224
+
+# Run Fluentd command by default
+CMD ["fluentd", "-c", "/fluentd/etc/$FLUENTD_CONF", "-p", "/fluentd/plugins"]

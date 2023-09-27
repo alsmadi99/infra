@@ -125,5 +125,4 @@ jobs:
             sudo docker build -t my-fluentd .
             sudo docker stop my-fluentd || true
             sudo docker rm my-fluentd || true
-            sudo docker run -d --name my-fluentd --network my-network -p 127.0.0.1:24231:24231 -p 127.0.0.1:24224:24224 -p 127.0.0.1:5140:5140 my-fluentd
-            sudo docker network connect my-network my-fluentd || true
+            sudo docker run -d --name my-fluentd --network my-network -p 127.0.0.1:24231:24231 -p 127.0.0.1:24224:24224 my-fluentd
