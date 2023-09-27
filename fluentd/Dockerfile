@@ -4,7 +4,7 @@ FROM fluent/fluentd:edge-debian
 ENV FLUENTD_CONF=fluentd.conf
 
 # Install Fluentd Prometheus plugin
-RUN ["gem", "install", "fluent-plugin-prometheus", "--no-document"]
+RUN gem install fluent-plugin-prometheus --no-document || true
 
 # Copy Fluentd configuration file
 COPY fluentd.conf /fluentd/etc/fluentd.conf
