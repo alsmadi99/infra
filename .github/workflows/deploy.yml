@@ -106,23 +106,23 @@ jobs:
             sudo docker rm my-blackbox-exporter || true
             sudo docker run -d --name my-blackbox-exporter --network my-network -p 127.0.0.1:9115:9115 my-blackbox-exporter
 
-  deploy_fluentd:
-    runs-on: ubuntu-latest
-    needs: clone
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+  # deploy_fluentd:
+  #   runs-on: ubuntu-latest
+  #   needs: clone
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
 
-      - name: SSH and deploy Fluentd on Hetzner
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HETZNER_IP }}
-          username: ${{ secrets.HETZNER_USERNAME }}
-          key: ${{ secrets.HETZNER_SSH_KEY }}
-          port: ${{ secrets.HETZNER_PORT }}
-          script: |
-            cd logging/fluentd
-            sudo docker build -t my-fluentd .
-            sudo docker stop my-fluentd || true
-            sudo docker rm my-fluentd || true
-            sudo docker run -d --name my-fluentd --network my-network -p 127.0.0.1:24231:24231 -p 127.0.0.1:24224:24224 my-fluentd
+  #     - name: SSH and deploy Fluentd on Hetzner
+  #       uses: appleboy/ssh-action@master
+  #       with:
+  #         host: ${{ secrets.HETZNER_IP }}
+  #         username: ${{ secrets.HETZNER_USERNAME }}
+  #         key: ${{ secrets.HETZNER_SSH_KEY }}
+  #         port: ${{ secrets.HETZNER_PORT }}
+  #         script: |
+  #           cd logging/fluentd
+  #           sudo docker build -t my-fluentd .
+  #           sudo docker stop my-fluentd || true
+  #           sudo docker rm my-fluentd || true
+  #           sudo docker run -d --name my-fluentd --network my-network -p 127.0.0.1:24231:24231 -p 127.0.0.1:24224:24224 my-fluentd
