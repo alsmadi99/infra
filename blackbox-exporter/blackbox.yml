@@ -1,0 +1,7 @@
+modules:
+  http_2xx_4xx_5xx:
+    prober: http
+    timeout: 5s
+    http:
+      valid_status_codes:
+        [200, 201, 203, 204, 400, 401, 402, 403, 404, 500, 501, 502]
