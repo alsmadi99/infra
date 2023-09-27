@@ -13,4 +13,4 @@ COPY fluentd.conf /fluentd/etc/fluentd.conf
 EXPOSE 24224 24231
 
 # Run Fluentd command by default
-CMD ["fluentd", "-c", "/fluentd/etc/$FLUENTD_CONF", "-p", "/fluentd/plugins"]
+CMD fluentd -c /fluentd/etc/$FLUENTD_CONF -p /fluentd/plugins
