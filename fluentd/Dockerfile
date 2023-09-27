@@ -1,5 +1,5 @@
 # Use Fluentd's latest image
-FROM fluent/fluentd:latest
+FROM fluent/fluentd
 
 # Set environment variable for Fluentd config
 ENV FLUENTD_CONF=fluentd.conf
