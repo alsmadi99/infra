@@ -1,5 +1,5 @@
 # Use Fluentd's latest image
-FROM fluent/fluentd:v1.3-debian-1
+FROM fluent/fluentd:v1.16-1
 
 # Set environment variable for Fluentd config
 ENV FLUENTD_CONF=fluentd.conf
