@@ -20,7 +20,7 @@ jobs:
           key: ${{ secrets.HETZNER_SSH_KEY }}
           port: ${{ secrets.HETZNER_PORT }}
           script: |
-            git clone git@github.com:smadixd/logging.git || git -C logging pull origin main
+            git clone git@github.com:smadixd/nginx.git || git -C nginx pull origin main
 
   nginx:
     runs-on: ubuntu-latest
@@ -61,7 +61,7 @@ jobs:
           key: ${{ secrets.HETZNER_SSH_KEY }}
           port: ${{ secrets.HETZNER_PORT }}
           script: |
-            cd logging/grafana
+            cd nginx/grafana
             sudo docker build -t my-grafana .
             sudo docker stop my-grafana || true
             sudo docker rm my-grafana || true
@@ -82,7 +82,7 @@ jobs:
           key: ${{ secrets.HETZNER_SSH_KEY }}
           port: ${{ secrets.HETZNER_PORT }}
           script: |
-            cd logging/prometheus
+            cd nginx/prometheus
             sudo docker build -t my-prometheus .
             sudo docker stop my-prometheus || true
             sudo docker rm my-prometheus || true
@@ -103,7 +103,7 @@ jobs:
           key: ${{ secrets.HETZNER_SSH_KEY }}
           port: ${{ secrets.HETZNER_PORT }}
           script: |
-            cd logging/nginx-exporter
+            cd nginx/nginx-exporter
             sudo docker build -t my-nginx-exporter .
             sudo docker stop my-nginx-exporter || true
             sudo docker rm my-nginx-exporter || true
@@ -124,7 +124,7 @@ jobs:
           key: ${{ secrets.HETZNER_SSH_KEY }}
           port: ${{ secrets.HETZNER_PORT }}
           script: |
-            cd logging/blackbox-exporter
+            cd nginx/blackbox-exporter
             sudo docker build -t my-blackbox-exporter .
             sudo docker stop my-blackbox-exporter || true
             sudo docker rm my-blackbox-exporter || true
@@ -145,7 +145,7 @@ jobs:
   #         key: ${{ secrets.HETZNER_SSH_KEY }}
   #         port: ${{ secrets.HETZNER_PORT }}
   #         script: |
-  #           cd logging/fluentd
+  #           cd nginx/fluentd
   #           sudo docker build -t my-fluentd .
   #           sudo docker stop my-fluentd || true
   #           sudo docker rm my-fluentd || true
