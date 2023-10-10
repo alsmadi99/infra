@@ -22,9 +22,33 @@ jobs:
           script: |
             git clone git@github.com:smadixd/logging.git || git -C logging pull origin main
 
-  deploy_grafana:
+  nginx:
     runs-on: ubuntu-latest
     needs: clone
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: SSH and deploy Blackbox Exporter on Hetzner
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HETZNER_IP }}
+          username: ${{ secrets.HETZNER_USERNAME }}
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          port: ${{ secrets.HETZNER_PORT }}
+          script: |
+            git clone git@github.com:smadixd/my-nginx.git || git -C my-nginx pull origin main
+            cd my-nginx 
+            git checkout main
+            sudo docker build -t my-nginx .
+            sudo docker stop my-nginx || true
+            sudo docker rm my-nginx || true
+            sudo docker network create my-network || true
+            sudo docker run -d --name my-nginx --network my-network -v /etc/letsencrypt:/etc/letsencrypt:ro -p 127.0.0.1:80:80 -p 443:443 my-nginx
+
+  deploy_grafana:
+    runs-on: ubuntu-latest
+    needs: nginx
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -45,7 +69,7 @@ jobs:
 
   deploy_prometheus:
     runs-on: ubuntu-latest
-    needs: clone
+    needs: nginx
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -66,7 +90,7 @@ jobs:
 
   deploy_nginx_exporter:
     runs-on: ubuntu-latest
-    needs: clone
+    needs: nginx
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -87,7 +111,7 @@ jobs:
 
   deploy_blackbox_exporter:
     runs-on: ubuntu-latest
-    needs: clone
+    needs: nginx
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -108,7 +132,7 @@ jobs:
 
   # deploy_fluentd:
   #   runs-on: ubuntu-latest
-  #   needs: clone
+  #   needs: nginx
   #   steps:
   #     - name: Checkout code
   #       uses: actions/checkout@v3
