@@ -37,9 +37,7 @@ jobs:
           key: ${{ secrets.HETZNER_SSH_KEY }}
           port: ${{ secrets.HETZNER_PORT }}
           script: |
-            git clone git@github.com:smadixd/my-nginx.git || git -C my-nginx pull origin main
-            cd my-nginx 
-            git checkout main
+            cd nginx/nginx
             sudo docker build --no-cache -t my-nginx .
             sudo docker stop my-nginx || true
             sudo docker rm my-nginx || true
