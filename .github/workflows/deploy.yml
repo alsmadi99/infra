@@ -40,7 +40,7 @@ jobs:
             git clone git@github.com:smadixd/my-nginx.git || git -C my-nginx pull origin main
             cd my-nginx 
             git checkout main
-            sudo docker build -t my-nginx .
+            sudo docker build --no-cache -t my-nginx .
             sudo docker stop my-nginx || true
             sudo docker rm my-nginx || true
             sudo docker network create my-network || true
@@ -62,7 +62,7 @@ jobs:
           port: ${{ secrets.HETZNER_PORT }}
           script: |
             cd nginx/grafana
-            sudo docker build -t my-grafana .
+            sudo docker build --no-cache -t my-grafana .
             sudo docker stop my-grafana || true
             sudo docker rm my-grafana || true
             sudo docker run -d --name my-grafana -p 127.0.0.1:8080:8080 --network my-network -v grafana_data:/var/lib/grafana my-grafana
@@ -83,7 +83,7 @@ jobs:
           port: ${{ secrets.HETZNER_PORT }}
           script: |
             cd nginx/prometheus
-            sudo docker build -t my-prometheus .
+            sudo docker build --no-cache -t my-prometheus .
             sudo docker stop my-prometheus || true
             sudo docker rm my-prometheus || true
             sudo docker run -d --name my-prometheus -p 127.0.0.1:9090:9090 --network my-network -v prometheus_data:/prometheus my-prometheus
@@ -104,7 +104,7 @@ jobs:
           port: ${{ secrets.HETZNER_PORT }}
           script: |
             cd nginx/nginx-exporter
-            sudo docker build -t my-nginx-exporter .
+            sudo docker build --no-cache -t my-nginx-exporter .
             sudo docker stop my-nginx-exporter || true
             sudo docker rm my-nginx-exporter || true
             sudo docker run -d --name my-nginx-exporter --network my-network --network-alias=my-nginx -p 127.0.0.1:9113:9113 my-nginx-exporter
@@ -125,7 +125,7 @@ jobs:
           port: ${{ secrets.HETZNER_PORT }}
           script: |
             cd nginx/blackbox-exporter
-            sudo docker build -t my-blackbox-exporter .
+            sudo docker build --no-cache -t my-blackbox-exporter .
             sudo docker stop my-blackbox-exporter || true
             sudo docker rm my-blackbox-exporter || true
             sudo docker run -d --name my-blackbox-exporter --network my-network -p 127.0.0.1:9115:9115 my-blackbox-exporter
@@ -146,7 +146,7 @@ jobs:
   #         port: ${{ secrets.HETZNER_PORT }}
   #         script: |
   #           cd nginx/fluentd
-  #           sudo docker build -t my-fluentd .
+  #           sudo docker build --no-cache -t my-fluentd .
   #           sudo docker stop my-fluentd || true
   #           sudo docker rm my-fluentd || true
   #           sudo docker run -d --name my-fluentd --network my-network -p 127.0.0.1:24231:24231 -p 127.0.0.1:24224:24224 my-fluentd
