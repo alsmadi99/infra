@@ -33,15 +33,7 @@ resource "google_compute_instance" "vm_instance" {
   }
 
   metadata = {
-    "gce-container-declaration" = <<CONTAINER
-spec:
-  containers:
-    - name: example-container
-      image: 'busybox:latest'
-      stdin: false
-      tty: false
-  restartPolicy: Always
-CONTAINER
+    ssh-keys = "smadi:${file("~/.ssh/id_rsa.pub")}"
   }
 
   service_account {
