@@ -32,5 +32,5 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
-terraform-iac\google-creds.json
-**/*.json
+
+google.json

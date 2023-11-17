@@ -9,7 +9,7 @@ terraform {
 
 
 provider "google" {
-  credentials = file("../../../../google-creds.json")
+  credentials = file("../../../../google.json")
   project     = "graphic-mason-405418"
   region      = "europe-west3"
 }
