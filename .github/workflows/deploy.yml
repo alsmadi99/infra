@@ -149,68 +149,6 @@
 #   #           sudo docker rm my-fluentd || true
 #   #           sudo docker run -d --name my-fluentd --network my-network -p 127.0.0.1:24231:24231 -p 127.0.0.1:24224:24224 my-fluentd
 
-# name: Build and Push to Artifact Registry
-
-# on:
-#   push:
-#     branches:
-#       - main
-
-# env:
-#   PROJECT_ID: ${{ secrets.GCP_PROJECT }}
-#   REPO_NAME: my-docker-repo
-#   LOCATION: europe-west3
-
-# jobs:
-#   setup-build-publish:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v3
-
-#       # Setup gcloud CLI
-#       - id: "auth"
-#         uses: "google-github-actions/auth@v1"
-#         with:
-#           credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
-
-#       - name: "Set up Cloud SDK"
-#         uses: "google-github-actions/setup-gcloud@v1"
-
-#       - name: Configure Docker to use the gcloud command-line tool as a credential helper
-#         run: gcloud auth configure-docker ${{ env.LOCATION }}-docker.pkg.dev
-
-#       # Build and push nginx
-#       - name: Build and push NGINX Docker image
-#         run: |
-#           docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/nginx:latest ./nginx
-#           docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/nginx:latest
-
-#       # Build and push grafana
-#       - name: Build and push Grafana Docker image
-#         run: |
-#           docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/grafana:latest ./grafana
-#           docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/grafana:latest
-
-#       # Build and push prometheus
-#       - name: Build and push Prometheus Docker image
-#         run: |
-#           docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/prometheus:latest ./prometheus
-#           docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/prometheus:latest
-
-#       # Build and push nginx exporter
-#       - name: Build and push Nginx Exporter Docker image
-#         run: |
-#           docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/nginx-exporter:latest ./nginx-exporter
-#           docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/nginx-exporter:latest
-
-#       # Build and push blackbox exporter
-#       - name: Build and push Nginx Exporter Docker image
-#         run: |
-#           docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/blackbox-exporter:latest ./blackbox-exporter
-#           docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/blackbox-exporter:latest
-
 name: Build and Push to Artifact Registry
 
 on:
@@ -224,94 +162,156 @@ env:
   LOCATION: europe-west3
 
 jobs:
-  auth:
+  setup-build-publish:
     runs-on: ubuntu-latest
-    outputs:
-      success: ${{ steps.auth_step.outcome == 'success' }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Authenticate to Google Cloud
-        id: auth_step
-        uses: google-github-actions/auth@v1
+      # Setup gcloud CLI
+      - id: "auth"
+        uses: "google-github-actions/auth@v1"
         with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+          credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
 
-  configure-docker:
-    needs: auth
-    runs-on: ubuntu-latest
-    if: needs.auth.outputs.success
-    steps:
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v1"
+
       - name: Configure Docker to use the gcloud command-line tool as a credential helper
         run: gcloud auth configure-docker ${{ env.LOCATION }}-docker.pkg.dev
 
-  nginx:
-    needs: [auth, configure-docker]
-    runs-on: ubuntu-latest
-    if: needs.auth.outputs.success
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      # Build and push images
+      # Build and push nginx
       - name: Build and push NGINX Docker image
         run: |
           docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/nginx:latest ./nginx
           docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/nginx:latest
 
-  grafana:
-    needs: [auth, configure-docker]
-    runs-on: ubuntu-latest
-    if: needs.auth.outputs.success
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      # Build and push images
-      - name: Build and push NGINX Docker image
+      # Build and push grafana
+      - name: Build and push Grafana Docker image
         run: |
           docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/grafana:latest ./grafana
           docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/grafana:latest
 
-  prometheus:
-    needs: [auth, configure-docker]
-    runs-on: ubuntu-latest
-    if: needs.auth.outputs.success
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      # Build and push images
-      - name: Build and push NGINX Docker image
+      # Build and push prometheus
+      - name: Build and push Prometheus Docker image
         run: |
           docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/prometheus:latest ./prometheus
           docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/prometheus:latest
 
-  nginx-exporter:
-    needs: [auth, configure-docker]
-    runs-on: ubuntu-latest
-    if: needs.auth.outputs.success
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      # Build and push images
-      - name: Build and push NGINX Docker image
+      # Build and push nginx exporter
+      - name: Build and push Nginx Exporter Docker image
         run: |
           docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/nginx-exporter:latest ./nginx-exporter
           docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/nginx-exporter:latest
 
-  blackbox-exporter:
-    needs: [auth, configure-docker]
-    runs-on: ubuntu-latest
-    if: needs.auth.outputs.success
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      # Build and push images
-      - name: Build and push NGINX Docker image
+      # Build and push blackbox exporter
+      - name: Build and push Nginx Exporter Docker image
         run: |
           docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/blackbox-exporter:latest ./blackbox-exporter
           docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/blackbox-exporter:latest
+
+# name: Build and Push to Artifact Registry
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+# env:
+#   PROJECT_ID: ${{ secrets.GCP_PROJECT }}
+#   REPO_NAME: my-docker-repo
+#   LOCATION: europe-west3
+
+# jobs:
+#   auth:
+#     runs-on: ubuntu-latest
+#     outputs:
+#       success: ${{ steps.auth_step.outcome == 'success' }}
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       - name: Authenticate to Google Cloud
+#         id: auth_step
+#         uses: google-github-actions/auth@v1
+#         with:
+#           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+#   configure-docker:
+#     needs: auth
+#     runs-on: ubuntu-latest
+#     if: needs.auth.outputs.success
+#     steps:
+#       - name: Configure Docker to use the gcloud command-line tool as a credential helper
+#         run: gcloud auth configure-docker ${{ env.LOCATION }}-docker.pkg.dev
+
+#   nginx:
+#     needs: [auth, configure-docker]
+#     runs-on: ubuntu-latest
+#     if: needs.auth.outputs.success
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       # Build and push images
+#       - name: Build and push NGINX Docker image
+#         run: |
+#           docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/nginx:latest ./nginx
+#           docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/nginx:latest
+
+#   grafana:
+#     needs: [auth, configure-docker]
+#     runs-on: ubuntu-latest
+#     if: needs.auth.outputs.success
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       # Build and push images
+#       - name: Build and push NGINX Docker image
+#         run: |
+#           docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/grafana:latest ./grafana
+#           docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/grafana:latest
+
+#   prometheus:
+#     needs: [auth, configure-docker]
+#     runs-on: ubuntu-latest
+#     if: needs.auth.outputs.success
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       # Build and push images
+#       - name: Build and push NGINX Docker image
+#         run: |
+#           docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/prometheus:latest ./prometheus
+#           docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/prometheus:latest
+
+#   nginx-exporter:
+#     needs: [auth, configure-docker]
+#     runs-on: ubuntu-latest
+#     if: needs.auth.outputs.success
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       # Build and push images
+#       - name: Build and push NGINX Docker image
+#         run: |
+#           docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/nginx-exporter:latest ./nginx-exporter
+#           docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/nginx-exporter:latest
+
+#   blackbox-exporter:
+#     needs: [auth, configure-docker]
+#     runs-on: ubuntu-latest
+#     if: needs.auth.outputs.success
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       # Build and push images
+#       - name: Build and push NGINX Docker image
+#         run: |
+#           docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/blackbox-exporter:latest ./blackbox-exporter
+#           docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/blackbox-exporter:latest
