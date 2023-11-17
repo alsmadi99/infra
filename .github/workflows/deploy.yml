@@ -219,9 +219,10 @@ jobs:
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.HETZNER_SSH_KEY }}
+          key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
+            whoami
             docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx:latest
             docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/grafana:latest
             docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/prometheus:latest
