@@ -231,7 +231,7 @@ jobs:
           ssh_private_key: "${{ secrets.SSH_KEY }}"
           command: "echo Hello world"
 
-      - id: "compute-ssh"
+      - id: "test"
         run: |
           whoami
           docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx:latest
