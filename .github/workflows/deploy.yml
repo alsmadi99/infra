@@ -222,6 +222,12 @@ jobs:
         with:
           credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
 
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v1"
+
+      - name: Configure Docker to use the gcloud command-line tool as a credential helper
+        run: gcloud auth configure-docker ${{ env.LOCATION }}-docker.pkg.dev
+
       - id: "compute-ssh"
         name: SSH and run Docker containers
         uses: "google-github-actions/ssh-compute@v0"
