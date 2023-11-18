@@ -20,7 +20,7 @@ jobs:
           key: ${{ secrets.HETZNER_SSH_KEY }}
           port: ${{ secrets.HETZNER_PORT }}
           script: |
-            git clone git@github.com:smadixd/nginx.git || git -C nginx pull origin main
+            git clone git@github.com:smadixd/infra.git || git -C infra pull origin main
 
   nginx:
     runs-on: ubuntu-latest
@@ -37,7 +37,7 @@ jobs:
           key: ${{ secrets.HETZNER_SSH_KEY }}
           port: ${{ secrets.HETZNER_PORT }}
           script: |
-            cd nginx/nginx
+            cd infra/nginx
             sudo docker build --no-cache -t my-nginx .
             sudo docker stop my-nginx || true
             sudo docker rm my-nginx || true
@@ -59,7 +59,7 @@ jobs:
           key: ${{ secrets.HETZNER_SSH_KEY }}
           port: ${{ secrets.HETZNER_PORT }}
           script: |
-            cd nginx/grafana
+            cd infra/grafana
             sudo docker build --no-cache -t my-grafana .
             sudo docker stop my-grafana || true
             sudo docker rm my-grafana || true
@@ -80,7 +80,7 @@ jobs:
           key: ${{ secrets.HETZNER_SSH_KEY }}
           port: ${{ secrets.HETZNER_PORT }}
           script: |
-            cd nginx/prometheus
+            cd infra/prometheus
             sudo docker build --no-cache -t my-prometheus .
             sudo docker stop my-prometheus || true
             sudo docker rm my-prometheus || true
@@ -101,7 +101,7 @@ jobs:
           key: ${{ secrets.HETZNER_SSH_KEY }}
           port: ${{ secrets.HETZNER_PORT }}
           script: |
-            cd nginx/nginx-exporter
+            cd infra/nginx-exporter
             sudo docker build --no-cache -t my-nginx-exporter .
             sudo docker stop my-nginx-exporter || true
             sudo docker rm my-nginx-exporter || true
@@ -122,7 +122,7 @@ jobs:
           key: ${{ secrets.HETZNER_SSH_KEY }}
           port: ${{ secrets.HETZNER_PORT }}
           script: |
-            cd nginx/blackbox-exporter
+            cd infra/blackbox-exporter
             sudo docker build --no-cache -t my-blackbox-exporter .
             sudo docker stop my-blackbox-exporter || true
             sudo docker rm my-blackbox-exporter || true
