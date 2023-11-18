@@ -222,13 +222,15 @@ jobs:
         with:
           credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
 
-      - name: SSH and run Docker containers
+      - id: "compute-ssh"
+        name: SSH and run Docker containers
         uses: "google-github-actions/ssh-compute@v0"
         with:
           instance_name: ${{ secrets.INSTANCE_NAME }}
           zone: ${{ secrets.ZONE }}
           ssh_private_key: ${{ secrets.SSH_KEY }}
           script: |
+            whoami
             docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx:latest
             docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/grafana:latest
             docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/prometheus:latest
