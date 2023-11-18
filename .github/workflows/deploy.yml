@@ -211,6 +211,9 @@ jobs:
           docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/blackbox-exporter:latest
 
   deploy:
+    permissions:
+      contents: "read"
+      id-token: "write"
     runs-on: ubuntu-latest
     needs: push
     steps:
@@ -240,7 +243,7 @@ jobs:
       - id: "pull-and-run"
         name: Pull and run docker images
         run: |
-          docker network create my-network 
+          docker network create my-network || true
 
           docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx:latest
           docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/grafana:latest
