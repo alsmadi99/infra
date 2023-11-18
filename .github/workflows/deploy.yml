@@ -273,3 +273,5 @@ jobs:
 
           docker ps -a
           ls -a
+          whoami
+          pwd
