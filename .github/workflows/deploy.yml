@@ -243,6 +243,7 @@ jobs:
       - id: "pull-and-run"
         name: Pull and run docker images
         run: |
+          gcloud auth configure-docker ${{ env.LOCATION }}-docker.pkg.dev --quiet
           docker network create my-network || true
 
           docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx:latest
