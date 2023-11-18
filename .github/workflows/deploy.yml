@@ -253,20 +253,20 @@ jobs:
 
           docker stop nginx || true
           docker rm nginx || true
-          docker run -d --name nginx --network my-network -p 127.0.0.1:80:80 -p 443:443 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx:latest
+          docker run -d --name nginx --network my-network -p 80:80 -p 443:443 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx:latest
 
           docker stop grafana || true
           docker rm grafana || true
-          docker run -d --name grafana --network my-network -p 127.0.0.1:3000:3000 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/grafana:latest
+          docker run -d --name grafana --network my-network -p 3000:3000 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/grafana:latest
 
           docker stop prometheus || true
           docker rm prometheus || true
-          docker run -d --name prometheus --network my-network -p 127.0.0.1:9090:9090 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/prometheus:latest
+          docker run -d --name prometheus --network my-network -p 9090:9090 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/prometheus:latest
 
           docker stop nginx-exporter || true
           docker rm nginx-exporter || true
-          docker run -d --name nginx-exporter --network my-network -p 127.0.0.1:9113:9113 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx-exporter:latest
+          docker run -d --name nginx-exporter --network my-network -p 9113:9113 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx-exporter:latest
 
           docker stop blackbox-exporter || true
           docker rm blackbox-exporter || true
-          docker run -d --name blackbox-exporter --network my-network -p 127.0.0.1:9115:9115 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/blackbox-exporter:latest
+          docker run -d --name blackbox-exporter --network my-network -p 9115:9115 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/blackbox-exporter:latest
