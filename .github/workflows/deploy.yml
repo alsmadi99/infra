@@ -214,15 +214,21 @@ jobs:
     runs-on: ubuntu-latest
     # needs: push
     steps:
-      - name: SSH and run Docker containers
-        uses: appleboy/ssh-action@master
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - id: "auth"
+        uses: "google-github-actions/auth@v1"
         with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SERVER_SSH_PORT }}
+          credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
+
+      - name: SSH and run Docker containers
+        uses: "google-github-actions/ssh-compute@v0"
+        with:
+          instance_name: ${{ secrets.INSTANCE_NAME }}
+          zone: ${{ secrets.ZONE }}
+          ssh_private_key: ${{ secrets.SSH_KEY }}
           script: |
-            whoami
             docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx:latest
             docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/grafana:latest
             docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/prometheus:latest
@@ -231,20 +237,20 @@ jobs:
 
             docker stop nginx || true
             docker rm nginx || true
-            docker run -d --name nginx --network my-network -p 80:80 -p 443:443 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx:latest
+            docker run -d --name nginx --network my-network -p 127.0.0.1:80:80 -p 443:443 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx:latest
 
             docker stop grafana || true
             docker rm grafana || true
-            docker run -d --name grafana --network my-network -p 3000:3000 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/grafana:latest
+            docker run -d --name grafana --network my-network -p 127.0.0.1:3000:3000 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/grafana:latest
 
             docker stop prometheus || true
             docker rm prometheus || true
-            docker run -d --name prometheus --network my-network -p 9090:9090 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/prometheus:latest
+            docker run -d --name prometheus --network my-network -p 127.0.0.1:9090:9090 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/prometheus:latest
 
             docker stop nginx-exporter || true
             docker rm nginx-exporter || true
-            docker run -d --name nginx-exporter --network my-network -p 9113:9113 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx-exporter:latest
+            docker run -d --name nginx-exporter --network my-network -p 127.0.0.1:9113:9113 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx-exporter:latest
 
             docker stop blackbox-exporter || true
             docker rm blackbox-exporter || true
-            docker run -d --name blackbox-exporter --network my-network -p 9115:9115 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/blackbox-exporter:latest
+            docker run -d --name blackbox-exporter --network my-network -p 127.0.0.1:9115:9115 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/blackbox-exporter:latest
