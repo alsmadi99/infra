@@ -235,6 +235,7 @@ jobs:
           instance_name: "${{ secrets.INSTANCE_NAME }}"
           zone: "${{ secrets.ZONE }}"
           ssh_private_key: "${{ secrets.SSH_KEY }}"
+          command: "echo Hello world"
 
       - id: "pull-and-run"
         run: |
