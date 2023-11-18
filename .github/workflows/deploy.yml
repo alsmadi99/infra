@@ -162,11 +162,60 @@ env:
   LOCATION: europe-west3
 
 jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Setup gcloud CLI
+      - id: "auth"
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
+
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v1"
+
+      - name: Configure Docker to use the gcloud command-line tool as a credential helper
+        run: gcloud auth configure-docker ${{ env.LOCATION }}-docker.pkg.dev
+
+      # Build and push nginx
+      - name: Build and push NGINX Docker image
+        run: |
+          docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/nginx:latest ./nginx
+          docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/nginx:latest
+
+      # Build and push grafana
+      - name: Build and push Grafana Docker image
+        run: |
+          docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/grafana:latest ./grafana
+          docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/grafana:latest
+
+      # Build and push prometheus
+      - name: Build and push Prometheus Docker image
+        run: |
+          docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/prometheus:latest ./prometheus
+          docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/prometheus:latest
+
+      # Build and push nginx exporter
+      - name: Build and push Nginx Exporter Docker image
+        run: |
+          docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/nginx-exporter:latest ./nginx-exporter
+          docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/nginx-exporter:latest
+
+      # Build and push blackbox exporter
+      - name: Build and push Nginx Exporter Docker image
+        run: |
+          docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/blackbox-exporter:latest ./blackbox-exporter
+          docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/blackbox-exporter:latest
+
   deploy:
     permissions:
       contents: "read"
       id-token: "write"
     runs-on: ubuntu-latest
+    # needs: push
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -191,125 +240,33 @@ jobs:
           ssh_private_key: "${{ secrets.SSH_KEY }}"
           command: "echo Hello world"
 
-      - id: "test"
-        name: test
+      - id: "pull-and-run"
+        name: Pull and run docker images
         run: |
-          docker ps -a
-          docker images
-          ls -a
-          whoami
-          pwd
+          docker network create my-network || true
 
-  # push:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v3
+          docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx:latest
+          docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/grafana:latest
+          docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/prometheus:latest
+          docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx-exporter:latest
+          docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/blackbox-exporter:latest
 
-  #     # Setup gcloud CLI
-  #     - id: "auth"
-  #       uses: "google-github-actions/auth@v1"
-  #       with:
-  #         credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
+          docker stop nginx || true
+          docker rm nginx || true
+          docker run -d --name nginx --network my-network -p 80:80 -p 443:443 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx:latest
 
-  #     - name: "Set up Cloud SDK"
-  #       uses: "google-github-actions/setup-gcloud@v1"
+          docker stop grafana || true
+          docker rm grafana || true
+          docker run -d --name grafana --network my-network -p 3000:3000 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/grafana:latest
 
-  #     - name: Configure Docker to use the gcloud command-line tool as a credential helper
-  #       run: gcloud auth configure-docker ${{ env.LOCATION }}-docker.pkg.dev
+          docker stop prometheus || true
+          docker rm prometheus || true
+          docker run -d --name prometheus --network my-network -p 9090:9090 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/prometheus:latest
 
-  #     # Build and push nginx
-  #     - name: Build and push NGINX Docker image
-  #       run: |
-  #         docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/nginx:latest ./nginx
-  #         docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/nginx:latest
+          docker stop nginx-exporter || true
+          docker rm nginx-exporter || true
+          docker run -d --name nginx-exporter --network my-network -p 9113:9113 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx-exporter:latest
 
-  #     # Build and push grafana
-  #     - name: Build and push Grafana Docker image
-  #       run: |
-  #         docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/grafana:latest ./grafana
-  #         docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/grafana:latest
-
-  #     # Build and push prometheus
-  #     - name: Build and push Prometheus Docker image
-  #       run: |
-  #         docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/prometheus:latest ./prometheus
-  #         docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/prometheus:latest
-
-  #     # Build and push nginx exporter
-  #     - name: Build and push Nginx Exporter Docker image
-  #       run: |
-  #         docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/nginx-exporter:latest ./nginx-exporter
-  #         docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/nginx-exporter:latest
-
-  #     # Build and push blackbox exporter
-  #     - name: Build and push Nginx Exporter Docker image
-  #       run: |
-  #         docker build -t ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/blackbox-exporter:latest ./blackbox-exporter
-  #         docker push ${{ env.LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/blackbox-exporter:latest
-
-  # deploy:
-  #   permissions:
-  #     contents: "read"
-  #     id-token: "write"
-  #   runs-on: ubuntu-latest
-  #   # needs: push
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v3
-
-  #     - id: "auth"
-  #       uses: "google-github-actions/auth@v1"
-  #       with:
-  #         credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
-
-  #     - name: "Set up Cloud SDK"
-  #       uses: "google-github-actions/setup-gcloud@v1"
-
-  #     - name: Configure Docker to use the gcloud command-line tool as a credential helper
-  #       run: gcloud auth configure-docker ${{ env.LOCATION }}-docker.pkg.dev --quiet
-
-  #     - id: "compute-ssh"
-  #       name: SSH and run Docker containers
-  #       uses: "google-github-actions/ssh-compute@v0"
-  #       with:
-  #         instance_name: "${{ secrets.INSTANCE_NAME }}"
-  #         zone: "${{ secrets.ZONE }}"
-  #         ssh_private_key: "${{ secrets.SSH_KEY }}"
-  #         command: "echo Hello world"
-
-  #     - id: "pull-and-run"
-  #       name: Pull and run docker images
-  #       run: |
-  #         docker network create my-network || true
-
-  #         docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx:latest
-  #         docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/grafana:latest
-  #         docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/prometheus:latest
-  #         docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx-exporter:latest
-  #         docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/blackbox-exporter:latest
-
-  #         docker stop nginx || true
-  #         docker rm nginx || true
-  #         docker run -d --name nginx --network my-network -p 80:80 -p 443:443 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx:latest
-
-  #         docker stop grafana || true
-  #         docker rm grafana || true
-  #         docker run -d --name grafana --network my-network -p 3000:3000 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/grafana:latest
-
-  #         docker stop prometheus || true
-  #         docker rm prometheus || true
-  #         docker run -d --name prometheus --network my-network -p 9090:9090 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/prometheus:latest
-
-  #         docker stop nginx-exporter || true
-  #         docker rm nginx-exporter || true
-  #         docker run -d --name nginx-exporter --network my-network -p 9113:9113 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx-exporter:latest
-
-  #         docker stop blackbox-exporter || true
-  #         docker rm blackbox-exporter || true
-  #         docker run -d --name blackbox-exporter --network my-network -p 9115:9115 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/blackbox-exporter:latest
-
-  #         docker ps -a
-  #         ls -a
-  #         whoami
-  #         pwd
+          docker stop blackbox-exporter || true
+          docker rm blackbox-exporter || true
+          docker run -d --name blackbox-exporter --network my-network -p 9115:9115 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/blackbox-exporter:latest
