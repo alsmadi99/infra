@@ -25,6 +25,12 @@ resource "google_compute_instance" "vm_instance" {
     }
   }
 
+
+  service_account {
+    email  = var.service_account_email
+    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  }
+
   network_interface {
     network = "default"
     access_config {
@@ -34,10 +40,6 @@ resource "google_compute_instance" "vm_instance" {
 
   metadata = {
     ssh-keys = "smadi:${file("~/.ssh/id_rsa.pub")}"
-  }
-
-  service_account {
-    scopes = ["cloud-platform"]
   }
 
   tags = ["docker-vm"]

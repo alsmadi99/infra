@@ -229,7 +229,7 @@ jobs:
         uses: "google-github-actions/setup-gcloud@v1"
 
       - name: Configure Docker to use the gcloud command-line tool as a credential helper
-        run: gcloud auth configure-docker ${{ env.LOCATION }}-docker.pkg.dev
+        run: gcloud auth configure-docker ${{ env.LOCATION }}-docker.pkg.dev --quiet
 
       - id: "compute-ssh"
         name: SSH and run Docker containers
@@ -245,7 +245,8 @@ jobs:
         run: |
           docker network create my-network || true
           docker run -d --name my-nginx --network my-network -p 80:80 -p 443:443 $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx:latest
-
+          docker ps -a
+          ls -a
       # - id: "pull-and-run"
       #   name: Pull and run docker images
       #   run: |
