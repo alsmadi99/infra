@@ -195,6 +195,7 @@ jobs:
         name: test
         run: |
           docker ps -a
+          docker images
           ls -a
           whoami
           pwd
