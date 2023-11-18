@@ -238,7 +238,10 @@ jobs:
           command: "echo Hello world"
 
       - id: "pull-and-run"
+        name: Pull and run docker images
         run: |
+          docker network create my-network 
+
           docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/nginx:latest
           docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/grafana:latest
           docker pull $LOCATION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/prometheus:latest
