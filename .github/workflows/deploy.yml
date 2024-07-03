@@ -20,7 +20,7 @@ jobs:
           key: ${{ secrets.HETZNER_SSH_KEY }}
           port: ${{ secrets.HETZNER_PORT }}
           script: |
-            git clone git@github.com:mohammadalsmadi/infra.git || git -C infra pull origin main
+            git clone git@github.com:smadixd/infra.git || git -C infra pull origin main
 
   nginx:
     runs-on: ubuntu-latest
