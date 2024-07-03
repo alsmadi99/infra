@@ -6,8 +6,9 @@ This project is focused on infrastructure development and management. It is used
 
 ## Installation
 
-Clone the repository: `git clone https://github.com/your-username/infra.git`
+Clone the repository: `git clone https://github.com/smadixd/infra.git`
 
 ## License
 
 This project is licensed under the [MIT License](./LICENSE).
+
