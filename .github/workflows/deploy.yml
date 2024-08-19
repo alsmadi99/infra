@@ -38,11 +38,11 @@ jobs:
           port: ${{ secrets.HETZNER_PORT }}
           script: |
             cd infra/nginx
-            sudo docker build --no-cache -t my-nginx .
-            sudo docker stop my-nginx || true
-            sudo docker rm my-nginx || true
-            sudo docker network create my-network || true
-            sudo docker run -d --name my-nginx --network my-network -v /etc/letsencrypt:/etc/letsencrypt:ro -p 127.0.0.1:80:80 -p 443:443 my-nginx
+            docker build --no-cache -t my-nginx .
+            docker stop my-nginx || true
+            docker rm my-nginx || true
+            docker network create my-network || true
+            docker run -d --name my-nginx --network my-network -v /etc/letsencrypt:/etc/letsencrypt:ro -p 127.0.0.1:80:80 -p 443:443 my-nginx
 
   deploy_grafana:
     runs-on: ubuntu-latest
@@ -60,10 +60,10 @@ jobs:
           port: ${{ secrets.HETZNER_PORT }}
           script: |
             cd infra/grafana
-            sudo docker build --no-cache -t my-grafana .
-            sudo docker stop my-grafana || true
-            sudo docker rm my-grafana || true
-            sudo docker run -d --name my-grafana -p 127.0.0.1:8080:8080 --network my-network -v grafana_data:/var/lib/grafana my-grafana
+            docker build --no-cache -t my-grafana .
+            docker stop my-grafana || true
+            docker rm my-grafana || true
+            docker run -d --name my-grafana -p 127.0.0.1:8080:8080 --network my-network -v grafana_data:/var/lib/grafana my-grafana
 
   deploy_prometheus:
     runs-on: ubuntu-latest
@@ -81,10 +81,10 @@ jobs:
           port: ${{ secrets.HETZNER_PORT }}
           script: |
             cd infra/prometheus
-            sudo docker build --no-cache -t my-prometheus .
-            sudo docker stop my-prometheus || true
-            sudo docker rm my-prometheus || true
-            sudo docker run -d --name my-prometheus -p 127.0.0.1:9090:9090 --network my-network -v prometheus_data:/prometheus my-prometheus
+            docker build --no-cache -t my-prometheus .
+            docker stop my-prometheus || true
+            docker rm my-prometheus || true
+            docker run -d --name my-prometheus -p 127.0.0.1:9090:9090 --network my-network -v prometheus_data:/prometheus my-prometheus
 
   deploy_nginx_exporter:
     runs-on: ubuntu-latest
@@ -102,10 +102,10 @@ jobs:
           port: ${{ secrets.HETZNER_PORT }}
           script: |
             cd infra/nginx-exporter
-            sudo docker build --no-cache -t my-nginx-exporter .
-            sudo docker stop my-nginx-exporter || true
-            sudo docker rm my-nginx-exporter || true
-            sudo docker run -d --name my-nginx-exporter --network my-network --network-alias=my-nginx -p 127.0.0.1:9113:9113 my-nginx-exporter
+            docker build --no-cache -t my-nginx-exporter .
+            docker stop my-nginx-exporter || true
+            docker rm my-nginx-exporter || true
+            docker run -d --name my-nginx-exporter --network my-network --network-alias=my-nginx -p 127.0.0.1:9113:9113 my-nginx-exporter
 
   deploy_blackbox_exporter:
     runs-on: ubuntu-latest
@@ -123,10 +123,10 @@ jobs:
           port: ${{ secrets.HETZNER_PORT }}
           script: |
             cd infra/blackbox-exporter
-            sudo docker build --no-cache -t my-blackbox-exporter .
-            sudo docker stop my-blackbox-exporter || true
-            sudo docker rm my-blackbox-exporter || true
-            sudo docker run -d --name my-blackbox-exporter --network my-network -p 127.0.0.1:9115:9115 my-blackbox-exporter
+            docker build --no-cache -t my-blackbox-exporter .
+            docker stop my-blackbox-exporter || true
+            docker rm my-blackbox-exporter || true
+            docker run -d --name my-blackbox-exporter --network my-network -p 127.0.0.1:9115:9115 my-blackbox-exporter
 
 # name: Build and Push to Artifact Registry
 
